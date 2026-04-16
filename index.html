@@ -70,6 +70,36 @@
 <div class="section-label">Kontext &amp; Gewohnheiten</div>
 <div class="charts-grid" id="context-charts"></div>
 
+<!-- Verknüpfungen -->
+<div class="section-label">Verknüpfungen &amp; Relationen</div>
+<div class="chart-card span-12 relation-card">
+  <div class="card-label">Explorer</div>
+  <div class="card-title">Zusammenhänge zwischen zwei Feldern</div>
+
+  <div class="relation-controls">
+    <label>
+      Gruppieren nach
+      <select id="relation-group"></select>
+    </label>
+    <label>
+      Vergleichen mit
+      <select id="relation-value"></select>
+    </label>
+    <label>
+      Auswertung
+      <select id="relation-mode">
+        <option value="count">Verteilung (Anzahl)</option>
+        <option value="avg">Ø numerischer Wert je Gruppe</option>
+      </select>
+    </label>
+    <button class="btn-primary relation-btn" id="relation-run">Relation anzeigen</button>
+  </div>
+
+  <p class="relation-hint" id="relation-hint">Wähle zwei Felder, um z. B. Alter ↔ Beruf oder Alter ↔ Medienzeit sichtbar zu machen.</p>
+  <div class="chart-wrap relation-wrap"><canvas id="relation-canvas"></canvas></div>
+  <div class="table-wrap relation-table-wrap" id="relation-table"></div>
+</div>
+
 <!-- Rohdaten -->
 <div class="section-label">Rohdaten</div>
 <div class="chart-card span-12" id="raw-section">
