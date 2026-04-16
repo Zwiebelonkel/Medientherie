@@ -213,8 +213,8 @@ return newChart(canvas, 'bar', {
 labels,
 datasets: [{
 data: counts,
-backgroundColor: labels.map((*, i) => PALETTE[i % PALETTE.length] + 'cc'),
-borderColor:     labels.map((*, i) => PALETTE[i % PALETTE.length]),
+backgroundColor: labels.map((_, i) => PALETTE[i % PALETTE.length] + 'cc'),
+borderColor:     labels.map((_, i) => PALETTE[i % PALETTE.length]),
 borderWidth: 1,
 borderRadius: 4,
 }],
