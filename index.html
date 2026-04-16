@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mediennutzung — Umfrage Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+</head>
+<body>
+
+  <div class="bg-grid"></div>
+  <div class="bg-glow"></div>
+
+  <!-- HEADER -->
+
+  <header>
+    <div class="header-left">
+      <div class="eyebrow">// Umfrage Visualisierung</div>
+      <h1>Medien<span class="accent">Nutzung</span></h1>
+    </div>
+    <div class="stats-bar">
+      <div class="pill">Teilnehmer <strong id="stat-total">—</strong></div>
+      <div class="pill">Spalten <strong id="stat-cols">—</strong></div>
+    </div>
+  </header>
+
+  <!-- UPLOAD -->
+
+  <section id="upload-section">
+    <div class="upload-zone" id="upload-zone">
+      <input type="file" accept=".csv" id="csv-input" />
+      <div class="upload-icon">⬆</div>
+      <h2>CSV-Datei hochladen</h2>
+      <p>Umfrage-Export hier ablegen oder klicken</p>
+      <span class="upload-cta">Datei auswählen</span>
+      <button class="demo-btn" id="demo-btn">✦ Demo-Daten laden</button>
+    </div>
+  </section>
+
+  <!-- COLUMN MAPPER -->
+
+  <section id="mapper-section" class="hidden">
+    <div class="section-header">
+      <h2>Spalten zuordnen</h2>
+      <span class="badge">Schritt 2</span>
+    </div>
+    <div class="mapper-grid" id="mapper-grid"></div>
+    <button class="btn-primary" id="render-btn">→ Dashboard generieren</button>
+  </section>
+
+  <!-- DASHBOARD -->
+
+  <section id="dashboard" class="hidden">
+
+```
+<!-- KPIs -->
+<div class="kpi-row" id="kpi-row"></div>
+
+<!-- Demografie -->
+<div class="section-label">Demografie</div>
+<div class="charts-grid" id="demo-charts"></div>
+
+<!-- Medienverhalten -->
+<div class="section-label">Medienverhalten</div>
+<div class="charts-grid" id="media-charts"></div>
+
+<!-- Kontext & Gewohnheiten -->
+<div class="section-label">Kontext &amp; Gewohnheiten</div>
+<div class="charts-grid" id="context-charts"></div>
+
+<!-- Rohdaten -->
+<div class="section-label">Rohdaten</div>
+<div class="chart-card span-12" id="raw-section">
+  <div class="card-label">Alle Antworten</div>
+  <div class="card-title" id="raw-count"></div>
+  <div class="table-wrap" id="raw-table"></div>
+</div>
+```
+
+  </section>
+
+  <script src="app.js"></script>
+
+</body>
+</html>
