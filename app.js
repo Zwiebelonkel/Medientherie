@@ -147,6 +147,30 @@ document.getElementById('render-btn').addEventListener('click', renderDashboard)
 
 /* ─── Helpers ────────────────────────────────────────── */
 function getCol(key) { return colMap[key] || ''; }
+function fieldLabel(key) {
+const field = FIELDS.find(f => f.key === key);
+return field ? field.label.replace(/^[^\s]+\s/, '') : key;
+}
+
+function getCellValue(row, key) {
+const col = getCol(key);
+if (!col) return '';
+return (row[col] || '').toString().trim();
+}
+
+function splitMultiValue(val) {
+return val.split(';').map(v => v.trim()).filter(Boolean);
+}
+
+function parseNumeric(raw) {
+if (!raw) return null;
+const normalized = raw.toString().replace(',', '.');
+const matches = normalized.match(/\d+(\.\d+)?/g);
+if (!matches || !matches.length) return null;
+const nums = matches.map(Number).filter(n => !isNaN(n));
+if (!nums.length) return null;
+return nums.reduce((a, b) => a + b, 0) / nums.length;
+}
 
 /** Collect values for a column (splits multi-value cells by ;) */
 function getValues(key, multi = false) {
@@ -258,6 +282,7 @@ renderKPIs();
 renderDemoCharts();
 renderMediaCharts();
 renderContextCharts();
+initRelationExplorer();
 renderRawTable();
 }
 
@@ -476,6 +501,150 @@ const card    = makeCard(spanClass, labelText, titleText);
 container.appendChild(card);
 const canvas  = card.querySelector('canvas');
 builder(canvas);
+}
+
+/* ── Relation explorer ── */
+function initRelationExplorer() {
+const groupSel = document.getElementById('relation-group');
+const valueSel = document.getElementById('relation-value');
+const modeSel  = document.getElementById('relation-mode');
+const runBtn   = document.getElementById('relation-run');
+
+if (!groupSel || !valueSel || !modeSel || !runBtn) return;
+
+const mappedFields = FIELDS.filter(f => getCol(f.key));
+groupSel.innerHTML = mappedFields.map(f => `<option value="${f.key}">${fieldLabel(f.key)}</option>`).join('');
+valueSel.innerHTML = mappedFields.map(f => `<option value="${f.key}">${fieldLabel(f.key)}</option>`).join('');
+
+if (!mappedFields.length) return;
+
+groupSel.value = mappedFields.find(f => f.key === 'alter')?.key || mappedFields[0].key;
+valueSel.value = mappedFields.find(f => f.key === 'stunden')?.key || mappedFields[Math.min(1, mappedFields.length - 1)].key;
+
+runBtn.onclick = renderRelation;
+groupSel.onchange = renderRelation;
+valueSel.onchange = renderRelation;
+modeSel.onchange  = renderRelation;
+renderRelation();
+}
+
+function renderRelation() {
+const groupKey = document.getElementById('relation-group')?.value;
+const valueKey = document.getElementById('relation-value')?.value;
+const mode     = document.getElementById('relation-mode')?.value || 'count';
+const hintEl   = document.getElementById('relation-hint');
+const tableEl  = document.getElementById('relation-table');
+const canvas   = document.getElementById('relation-canvas');
+if (!groupKey || !valueKey || !canvas || !tableEl || !hintEl) return;
+
+if (mode === 'avg') {
+renderRelationAverage(groupKey, valueKey, canvas, tableEl, hintEl);
+} else {
+renderRelationDistribution(groupKey, valueKey, canvas, tableEl, hintEl);
+}
+}
+
+function renderRelationAverage(groupKey, valueKey, canvas, tableEl, hintEl) {
+const groups = {};
+parsedData.forEach(row => {
+const groupVal = getCellValue(row, groupKey);
+const rawVal = getCellValue(row, valueKey);
+if (!groupVal) return;
+const num = parseNumeric(rawVal);
+if (num === null) return;
+if (!groups[groupVal]) groups[groupVal] = [];
+groups[groupVal].push(num);
+});
+
+const entries = Object.entries(groups)
+.map(([label, nums]) => ({
+label,
+count: nums.length,
+avg: nums.reduce((a, b) => a + b, 0) / nums.length,
+}))
+.sort((a, b) => b.count - a.count)
+.slice(0, 20);
+
+if (!entries.length) {
+tableEl.innerHTML = '<table><tbody><tr><td>Keine numerischen Werte für diese Kombination gefunden.</td></tr></tbody></table>';
+hintEl.textContent = 'Tipp: Für "Ø numerischer Wert" sollte das zweite Feld Zahlen enthalten (z. B. Stunden).';
+newChart(canvas, 'bar', { labels: [], datasets: [{ data: [] }] });
+return;
+}
+
+chartBar(
+canvas,
+entries.map(e => e.label),
+entries.map(e => Number(e.avg.toFixed(2)))
+);
+
+const top = entries[0];
+hintEl.textContent = `Ø ${fieldLabel(valueKey)} je ${fieldLabel(groupKey)}. Höchster Mittelwert aktuell bei "${top.label}" (${top.avg.toFixed(2)}).`;
+tableEl.innerHTML = `<table>
+  <thead><tr><th>${fieldLabel(groupKey)}</th><th>Ø ${fieldLabel(valueKey)}</th><th>n</th></tr></thead>
+  <tbody>${entries.map(e => `<tr><td>${e.label}</td><td>${e.avg.toFixed(2)}</td><td>${e.count}</td></tr>`).join('')}</tbody>
+</table>`;
+}
+
+function renderRelationDistribution(groupKey, valueKey, canvas, tableEl, hintEl) {
+const matrix = {};
+parsedData.forEach(row => {
+const groupVal = getCellValue(row, groupKey);
+const valueRaw = getCellValue(row, valueKey);
+if (!groupVal || !valueRaw) return;
+const values = splitMultiValue(valueRaw);
+if (!values.length) return;
+if (!matrix[groupVal]) matrix[groupVal] = {};
+values.forEach(v => {
+matrix[groupVal][v] = (matrix[groupVal][v] || 0) + 1;
+});
+});
+
+const groupEntries = Object.entries(matrix).sort((a, b) => {
+const aTotal = Object.values(a[1]).reduce((x, y) => x + y, 0);
+const bTotal = Object.values(b[1]).reduce((x, y) => x + y, 0);
+return bTotal - aTotal;
+}).slice(0, 12);
+
+const allValues = {};
+groupEntries.forEach(([, m]) => Object.entries(m).forEach(([k, v]) => { allValues[k] = (allValues[k] || 0) + v; }));
+const topValues = Object.entries(allValues).sort((a, b) => b[1] - a[1]).slice(0, 6).map(e => e[0]);
+
+if (!groupEntries.length || !topValues.length) {
+tableEl.innerHTML = '<table><tbody><tr><td>Keine Werte für diese Kombination gefunden.</td></tr></tbody></table>';
+hintEl.textContent = 'Bitte zwei Felder mit vorhandenen Antworten wählen.';
+newChart(canvas, 'bar', { labels: [], datasets: [{ data: [] }] });
+return;
+}
+
+const labels = groupEntries.map(e => e[0]);
+const datasets = topValues.map((val, i) => ({
+label: val,
+data: groupEntries.map(([, groupMap]) => groupMap[val] || 0),
+backgroundColor: PALETTE[i % PALETTE.length] + 'cc',
+borderColor: PALETTE[i % PALETTE.length],
+borderWidth: 1,
+borderRadius: 4,
+}));
+
+newChart(canvas, 'bar', { labels, datasets }, {
+plugins: { legend: { display: true, position: 'bottom' } },
+responsive: true,
+scales: {
+x: { stacked: true, grid: { color: '#222235' }, ticks: { color: '#5a5a78' } },
+y: { stacked: true, beginAtZero: true, grid: { color: '#222235' }, ticks: { color: '#5a5a78' } },
+},
+});
+
+hintEl.textContent = `${fieldLabel(valueKey)} nach ${fieldLabel(groupKey)} (gestapelt, Top-${topValues.length} Ausprägungen).`;
+tableEl.innerHTML = `<table>
+  <thead><tr><th>${fieldLabel(groupKey)}</th>${topValues.map(v => `<th>${v}</th>`).join('')}</tr></thead>
+  <tbody>
+    ${groupEntries.map(([groupLabel, groupMap]) => `
+      <tr><td>${groupLabel}</td>${topValues.map(v => `<td>${groupMap[v] || 0}</td>`).join('')}</tr>
+    `).join('')}
+  </tbody>
+</table>`;
 }
 
 /* ── Raw table ── */
