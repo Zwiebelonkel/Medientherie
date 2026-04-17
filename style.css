@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
 
 /* ─── Variables ─────────────────────────────────────── */
 :root {
@@ -15,8 +15,8 @@
   --text:      #ddddf0;
   --muted:     #5a5a78;
   --card:      #0c0c18;
-  --mono:      'Space Mono', monospace;
-  --sans:      'Syne', sans-serif;
+  --mono:      'Poppins', sans-serif;
+  --sans:      'Poppins', sans-serif;
   --radius:    14px;
   --transition: .25s cubic-bezier(.4,0,.2,1);
 }
@@ -30,6 +30,11 @@ body {
   font-family: var(--sans);
   min-height: 100vh;
   overflow-x: hidden;
+}
+
+
+button, input, select, textarea {
+  font: inherit;
 }
 
 /* ─── Background decorations ─────────────────────────── */
@@ -56,7 +61,74 @@ header, #upload-section, #mapper-section, #dashboard {
 }
 @media (max-width: 768px) {
   header, #upload-section, #mapper-section, #dashboard {
-    padding-left: 20px; padding-right: 20px;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  header {
+    padding-top: 28px;
+    padding-bottom: 24px;
+  }
+
+  .stats-bar {
+    width: 100%;
+    gap: 8px;
+  }
+
+  .pill {
+    flex: 1;
+    justify-content: center;
+    min-width: 132px;
+  }
+
+  .upload-zone {
+    padding: 36px 18px;
+  }
+
+  .upload-zone h2 {
+    font-size: 20px;
+  }
+
+  .btn-primary {
+    width: 100%;
+    justify-content: center;
+    padding: 14px 18px;
+    letter-spacing: 1.2px;
+  }
+
+  .kpi-card {
+    min-width: calc(50% - 7px);
+    padding: 18px 14px;
+  }
+
+  .kpi-value {
+    font-size: 32px;
+  }
+
+  .chart-card {
+    padding: 20px 16px;
+  }
+
+  .card-title {
+    font-size: 18px;
+    margin-bottom: 18px;
+  }
+
+  .chart-wrap {
+    min-height: 220px;
+  }
+
+  .relation-wrap {
+    min-height: 260px;
+  }
+
+  table {
+    font-size: 10px;
+  }
+
+  th,
+  td {
+    padding: 9px 10px;
   }
 }
 
@@ -476,6 +548,38 @@ td {
   white-space: nowrap;
 }
 tr:hover td { color: var(--text); background: rgba(200,255,0,.02); }
+
+
+@media (max-width: 480px) {
+  header h1 {
+    font-size: clamp(28px, 9vw, 40px);
+    letter-spacing: -0.5px;
+  }
+
+  .eyebrow {
+    letter-spacing: 2px;
+  }
+
+  .upload-zone p {
+    font-size: 11px;
+    line-height: 1.45;
+  }
+
+  .kpi-row {
+    gap: 10px;
+  }
+
+  .kpi-card {
+    min-width: 100%;
+  }
+
+  .section-label {
+    letter-spacing: 2.6px;
+    font-size: 9px;
+    gap: 8px;
+    margin: 36px 0 16px;
+  }
+}
 
 /* Util */
 .hidden { display: none !important; }
