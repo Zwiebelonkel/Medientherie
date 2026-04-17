@@ -7,7 +7,7 @@ const chartInstances = {};
 /* ─── Chart.js defaults ──────────────────────────────── */
 Chart.defaults.color        = '#5a5a78';
 Chart.defaults.borderColor  = '#222235';
-Chart.defaults.font.family  = "'Space Mono', monospace";
+Chart.defaults.font.family  = "'Poppins', sans-serif";
 Chart.defaults.font.size    = 11;
 Chart.defaults.plugins.legend.display = false;
 
