@@ -15,33 +15,33 @@ const PALETTE = ['#c8ff00','#ff5f5f','#5f9fff','#ffac5f','#b05fff','#5fffd4','#f
 
 /* ─── Field definitions ──────────────────────────────── */
 const FIELDS = [
-{ key:'alter',       label:'🎂 Alter',                   hints:['alter','age','jahrgang'] },
-{ key:'geschlecht',  label:'👤 Geschlecht',               hints:['geschlecht','gender','sex'] },
-{ key:'familienstand',label:'💍 Familienstand',           hints:['familienstand','beziehungsstatus'] },
-{ key:'beschaeftigung',label:'🏢 Beschäftigungsstatus',   hints:['beschäftigungsstatus','beschaeftigungsstatus','employment'] },
-{ key:'nebenjob',    label:'💶 Nebenjob / Nebenverdienst', hints:['nebenjob','nebenverdienst','zusatzjob'] },
-{ key:'medien',      label:'📱 Genutzte Medien',          hints:['medien','medium','plattform','platform','app'] },
-{ key:'stunden',     label:'⏱ Stunden täglich',          hints:['stunden','stunde','hours','dauer','h_tag','täglich'] },
-{ key:'stunden_woche',label:'🗓 Stunden wöchentlich',     hints:['wöchentlich','woechentlich','woche'] },
-{ key:'tageszeit',   label:'🕐 Wann genutzt',             hints:['tageszeit','uhrzeit','wann','when'] },
-{ key:'ort',         label:'📍 Wo genutzt',               hints:['ort','wo','where','location','platz'] },
-{ key:'zweck',       label:'🎯 Nutzungszweck',            hints:['zweck','wozu','warum','grund','purpose'] },
-{ key:'aktuell',     label:'📰 Aktuell informieren via',  hints:['aktuell','nachrichten','informier','news'] },
+{ key:'alter',       label:'🎂 Alter',                   hints:['alter','age','jahrgang','wie alt'] },
+{ key:'geschlecht',  label:'👤 Geschlecht',               hints:['geschlecht','gender','sex','fühlst du dich zugehörig','fuehlst du dich'] },
+{ key:'familienstand',label:'💍 Familienstand',           hints:['familienstand','beziehungsstatus','familienstand'] },
+{ key:'beschaeftigung',label:'🏢 Beschäftigungsstatus',   hints:['beschäftigungsstatus','beschaeftigungsstatus','employment','beschäftigungsstat','beschaeftigungsstat'] },
+{ key:'nebenjob',    label:'💶 Nebenjob / Nebenverdienst', hints:['nebenjob','nebenverdienst','zusatzjob','hast du aktuell einen nebenjob'] },
+{ key:'medien',      label:'📱 Genutzte Medien',          hints:['welche medien nutzt du regelmäßig','medien nutzt du regelmäßig','medium','plattform','platform','app'] },
+{ key:'stunden',     label:'⏱ Stunden täglich',          hints:['täglich mit den von dir','täglich','stunden','stunde','hours','dauer','h_tag','wie viel zeit verbringst du täglich'] },
+{ key:'stunden_woche',label:'🗓 Stunden wöchentlich',     hints:['wöchentlich mit den von dir','wöchentlich','woechentlich','woche','wie viel zeit verbringst du wöchentlich'] },
+{ key:'tageszeit',   label:'🕐 Wann genutzt',             hints:['wann nutzt du','tageszeit','uhrzeit','wann','when'] },
+{ key:'ort',         label:'📍 Wo genutzt',               hints:['wo nutzt du','ort','wo','where','location','platz'] },
+{ key:'zweck',       label:'🎯 Nutzungszweck',            hints:['wozu nutzt du','zweck','wozu','warum','grund','purpose','hauptsächlich'] },
+{ key:'aktuell',     label:'📰 Aktuell informieren via',  hints:['tagesaktuell zu informieren','aktuell','nachrichten','informier','news'] },
 { key:'politisch',   label:'🏛 Politisch informieren via', hints:['politisch','politik','politische'] },
-{ key:'beziehung',   label:'💛 Beziehungsstatus',         hints:['beziehung','partner','status','relationship'] },
-{ key:'abhaengig',   label:'🔄 Abhängig / Doomscrolling', hints:['abhängig','abhaengig','doomscroll','sucht','addict'] },
-{ key:'beruflich',   label:'💼 Beruflich genutzt',        hints:['beruflich','beruf','job','work'] },
-{ key:'ki',          label:'🤖 KI-Inhalte konsumiert',    hints:['ki','ai','künstlich','generie','artificial'] },
-{ key:'hobby',       label:'🎮 Hobby beeinflusst Konsum', hints:['hobby','freizeit','leisure'] },
-{ key:'kommunikation_leidet',label:'🗣 Kommunikation leidet', hints:['kommunikation','mitmenschen','leidet'] },
-{ key:'interessen',  label:'🌱 Interessen/Hobbys',        hints:['interessen','hobbys'] },
-{ key:'inhalte',     label:'🧩 Überwiegend konsumierte Inhalte', hints:['inhalte konsumierst','überwiegend','content'] },
-{ key:'negativ',     label:'⚠ Negative Erfahrungen',      hints:['negative erfahrungen','fake news','fomo','hate','cybermobbing'] },
-{ key:'bezahlt',     label:'💳 Bezahlt für Medien',       hints:['bezahlt','pay','abo','subscription'] },
-{ key:'ueberschritt',label:'📊 Medienzeit überschritten', hints:['überschritt','ueberschritt','limit','mehr_als'] },
-{ key:'gefuehl',     label:'🧠 Gefühl nach Scrollen',     hints:['fühlst du dich','fuehlst du dich','nach dem scrollen'] },
+{ key:'beziehung',   label:'💛 Beziehungsstatus',         hints:['beziehung','partner','wie ist dein familienstand','familienstand'] },
+{ key:'abhaengig',   label:'🔄 Abhängig / Doomscrolling', hints:['würdest du behaupten','abhängig','abhaengig','doomscroll','sucht','addict'] },
+{ key:'beruflich',   label:'💼 Beruflich genutzt',        hints:['nutzt du medien beruflich','beruflich','beruf','job','work'] },
+{ key:'ki',          label:'🤖 KI-Inhalte konsumiert',    hints:['ki-generierte','ki','ai','künstlich','generie','artificial','konsumierst du ki'] },
+{ key:'hobby',       label:'🎮 Hobby beeinflusst Konsum', hints:['beeinflusst dein hobby','hobby','freizeit','leisure'] },
+{ key:'kommunikation_leidet',label:'🗣 Kommunikation leidet', hints:['kommunikation','mitmenschen','leidet','direkte kommunikation'] },
+{ key:'interessen',  label:'🌱 Interessen/Hobbys',        hints:['interessen','hobbys','welche interessen'] },
+{ key:'inhalte',     label:'🧩 Überwiegend konsumierte Inhalte', hints:['inhalte konsumierst du','inhalte','überwiegend','content'] },
+{ key:'negativ',     label:'⚠ Negative Erfahrungen',      hints:['negative erfahrungen','fake news','fomo','hate','cybermobbing','schon negative'] },
+{ key:'bezahlt',     label:'💳 Bezahlt für Medien',       hints:['bezahlst du','bezahlt','pay','abo','subscription'] },
+{ key:'ueberschritt',label:'📊 Medienzeit überschritten', hints:['um wie viel überschreitest','überschritt','ueberschritt','limit','mehr_als'] },
+{ key:'gefuehl',     label:'🧠 Gefühl nach Scrollen',     hints:['wie fühlst du dich nach','fuehlst du dich','nach dem scrollen','gefühl'] },
 { key:'vertrauen',   label:'✅ Medienvertrauen',          hints:['welchen medien vertraust','vertrauen'] },
-{ key:'reduziert',   label:'📉 Versucht zu reduzieren',   hints:['reduziert','reduz','weniger','cut'] },
+{ key:'reduziert',   label:'📉 Versucht zu reduzieren',   hints:['reduziert','reduz','weniger','cut','versucht zu reduzieren'] },
 ];
 
 /* ─── Auto-mapping ───────────────────────────────────── */
@@ -90,18 +90,38 @@ buildMapper();
 }
 
 /* ─── CSV upload ─────────────────────────────────────── */
+function parseCsvWithHeaderRepair(file) {
+const reader = new FileReader();
+reader.onload = function(evt) {
+let text = evt.target.result;
+// Join header lines that were split by a newline INSIDE a quoted field
+// PapaParse splits them → first row + second row are both "headers"
+// Strategy: parse raw, if row[0] looks like a continuation, merge it
+const result = Papa.parse(text, { skipEmptyLines: true });
+const rows = result.data;
+let headerRow, dataRows;
+if (rows.length >= 2 && rows[1][0] && /^[\(\[a-z]/.test(rows[1][0].trim())) {
+headerRow = rows[0].map((h, i) => (h + ' ' + (rows[1][i] || '')).trim());
+dataRows  = rows.slice(2);
+} else {
+headerRow = rows[0] || [];
+dataRows  = rows.slice(1);
+}
+parsedData = dataRows.map(r => {
+const obj = {};
+headerRow.forEach((h, i) => obj[h] = r[i] ?? '');
+return obj;
+});
+columns = headerRow;
+buildMapper();
+};
+reader.readAsText(file);
+}
+
 document.getElementById('csv-input').addEventListener('change', function (e) {
 const file = e.target.files[0];
 if (!file) return;
-Papa.parse(file, {
-header: true,
-skipEmptyLines: true,
-complete(res) {
-parsedData = res.data;
-columns    = res.meta.fields;
-buildMapper();
-},
-});
+parseCsvWithHeaderRepair(file);
 });
 
 document.getElementById('demo-btn').addEventListener('click', function (e) {
@@ -118,10 +138,7 @@ e.preventDefault();
 uploadZone.classList.remove('drag-over');
 const file = e.dataTransfer.files[0];
 if (!file) return;
-Papa.parse(file, {
-header: true, skipEmptyLines: true,
-complete(res) { parsedData = res.data; columns = res.meta.fields; buildMapper(); },
-});
+parseCsvWithHeaderRepair(file);
 });
 
 /* ─── Build mapper UI ────────────────────────────────── */
