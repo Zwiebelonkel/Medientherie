@@ -17,19 +17,30 @@ const PALETTE = ['#c8ff00','#ff5f5f','#5f9fff','#ffac5f','#b05fff','#5fffd4','#f
 const FIELDS = [
 { key:'alter',       label:'🎂 Alter',                   hints:['alter','age','jahrgang'] },
 { key:'geschlecht',  label:'👤 Geschlecht',               hints:['geschlecht','gender','sex'] },
+{ key:'familienstand',label:'💍 Familienstand',           hints:['familienstand','beziehungsstatus'] },
+{ key:'beschaeftigung',label:'🏢 Beschäftigungsstatus',   hints:['beschäftigungsstatus','beschaeftigungsstatus','employment'] },
+{ key:'nebenjob',    label:'💶 Nebenjob / Nebenverdienst', hints:['nebenjob','nebenverdienst','zusatzjob'] },
 { key:'medien',      label:'📱 Genutzte Medien',          hints:['medien','medium','plattform','platform','app'] },
 { key:'stunden',     label:'⏱ Stunden täglich',          hints:['stunden','stunde','hours','dauer','h_tag','täglich'] },
+{ key:'stunden_woche',label:'🗓 Stunden wöchentlich',     hints:['wöchentlich','woechentlich','woche'] },
 { key:'tageszeit',   label:'🕐 Wann genutzt',             hints:['tageszeit','uhrzeit','wann','when'] },
 { key:'ort',         label:'📍 Wo genutzt',               hints:['ort','wo','where','location','platz'] },
 { key:'zweck',       label:'🎯 Nutzungszweck',            hints:['zweck','wozu','warum','grund','purpose'] },
 { key:'aktuell',     label:'📰 Aktuell informieren via',  hints:['aktuell','nachrichten','informier','news'] },
+{ key:'politisch',   label:'🏛 Politisch informieren via', hints:['politisch','politik','politische'] },
 { key:'beziehung',   label:'💛 Beziehungsstatus',         hints:['beziehung','partner','status','relationship'] },
 { key:'abhaengig',   label:'🔄 Abhängig / Doomscrolling', hints:['abhängig','abhaengig','doomscroll','sucht','addict'] },
 { key:'beruflich',   label:'💼 Beruflich genutzt',        hints:['beruflich','beruf','job','work'] },
 { key:'ki',          label:'🤖 KI-Inhalte konsumiert',    hints:['ki','ai','künstlich','generie','artificial'] },
 { key:'hobby',       label:'🎮 Hobby beeinflusst Konsum', hints:['hobby','freizeit','leisure'] },
+{ key:'kommunikation_leidet',label:'🗣 Kommunikation leidet', hints:['kommunikation','mitmenschen','leidet'] },
+{ key:'interessen',  label:'🌱 Interessen/Hobbys',        hints:['interessen','hobbys'] },
+{ key:'inhalte',     label:'🧩 Überwiegend konsumierte Inhalte', hints:['inhalte konsumierst','überwiegend','content'] },
+{ key:'negativ',     label:'⚠ Negative Erfahrungen',      hints:['negative erfahrungen','fake news','fomo','hate','cybermobbing'] },
 { key:'bezahlt',     label:'💳 Bezahlt für Medien',       hints:['bezahlt','pay','abo','subscription'] },
 { key:'ueberschritt',label:'📊 Medienzeit überschritten', hints:['überschritt','ueberschritt','limit','mehr_als'] },
+{ key:'gefuehl',     label:'🧠 Gefühl nach Scrollen',     hints:['fühlst du dich','fuehlst du dich','nach dem scrollen'] },
+{ key:'vertrauen',   label:'✅ Medienvertrauen',          hints:['welchen medien vertraust','vertrauen'] },
 { key:'reduziert',   label:'📉 Versucht zu reduzieren',   hints:['reduziert','reduz','weniger','cut'] },
 ];
 
@@ -283,6 +294,7 @@ renderDemoCharts();
 renderMediaCharts();
 renderContextCharts();
 initRelationExplorer();
+renderInterestingRelations();
 renderRawTable();
 }
 
@@ -395,6 +407,12 @@ const { labels, counts } = sortedCounts(getValues('bezahlt'));
 if (!labels.length) return false;
 return canvas => chartDonut(canvas, labels, counts);
 });
+
+addChart(container, 'span-4', 'Status', 'Beschäftigungsstatus', () => {
+const { labels, counts } = sortedCounts(getValues('beschaeftigung'));
+if (!labels.length) return false;
+return canvas => chartBar(canvas, labels, counts, '#ffda5f', true);
+});
 }
 
 /* ── Media behavior ── */
@@ -434,6 +452,12 @@ addChart(container, 'span-6', 'Nachrichten', 'Politisch informieren via', () => 
 const { labels, counts } = sortedCounts(getValues('aktuell', true), 10);
 if (!labels.length) return false;
 return canvas => chartBar(canvas, labels, counts, '#ffac5f', true);
+});
+
+addChart(container, 'span-6', 'Politik', 'Politische Informationsquellen', () => {
+const { labels, counts } = sortedCounts(getValues('politisch', true), 10);
+if (!labels.length) return false;
+return canvas => chartBar(canvas, labels, counts, '#ff5f5f', true);
 });
 }
 
@@ -490,6 +514,24 @@ const { labels, counts } = sortedCounts(getValues('hobby'));
 if (!labels.length) return false;
 return canvas => chartDonut(canvas, labels, counts);
 });
+
+addChart(container, 'span-4', 'Wirkung', 'Gefühl nach dem Scrollen', () => {
+const { labels, counts } = sortedCounts(getValues('gefuehl', true), 10);
+if (!labels.length) return false;
+return canvas => chartBar(canvas, labels, counts, '#b05fff', true);
+});
+
+addChart(container, 'span-4', 'Risiken', 'Negative Erfahrungen', () => {
+const { labels, counts } = sortedCounts(getValues('negativ', true), 10);
+if (!labels.length) return false;
+return canvas => chartBar(canvas, labels, counts, '#ff5f5f', true);
+});
+
+addChart(container, 'span-4', 'Vertrauen', 'Welchen Medien wird vertraut?', () => {
+const { labels, counts } = sortedCounts(getValues('vertrauen', true), 10);
+if (!labels.length) return false;
+return canvas => chartDonut(canvas, labels, counts);
+});
 }
 
 /* ── Generic card + chart helper ── */
@@ -542,6 +584,82 @@ renderRelationAverage(groupKey, valueKey, canvas, tableEl, hintEl);
 } else {
 renderRelationDistribution(groupKey, valueKey, canvas, tableEl, hintEl);
 }
+}
+
+function normalizeYesNo(val) {
+const lower = (val || '').toString().trim().toLowerCase();
+if (!lower) return '';
+if (lower.startsWith('ja')) return 'ja';
+if (lower.startsWith('nein')) return 'nein';
+return lower;
+}
+
+function renderInterestingRelations() {
+const box = document.getElementById('relation-insights');
+if (!box) return;
+
+const insights = [];
+const sampleSize = parsedData.length;
+if (!sampleSize) {
+box.innerHTML = '';
+return;
+}
+
+const stCol = getCol('stunden');
+const abCol = getCol('abhaengig');
+if (stCol && abCol) {
+let high = 0, highDep = 0, low = 0, lowDep = 0;
+parsedData.forEach(row => {
+const h = parseNumeric(row[stCol]);
+const dep = normalizeYesNo(row[abCol]) === 'ja';
+if (h === null) return;
+if (h >= 5) { high++; if (dep) highDep++; }
+if (h <= 3) { low++; if (dep) lowDep++; }
+});
+if (high && low) {
+insights.push(`Bei hoher Nutzung (≥5h/Tag) geben ${Math.round((highDep / high) * 100)}% Abhängigkeit an; bei niedriger Nutzung (≤3h/Tag) sind es ${Math.round((lowDep / low) * 100)}%.`);
+}
+}
+
+const negCol = getCol('negativ');
+if (negCol) {
+let fakeNewsCount = 0;
+let hateCount = 0;
+parsedData.forEach(row => {
+const vals = splitMultiValue(row[negCol] || '').map(v => v.toLowerCase());
+if (vals.some(v => v.includes('fake'))) fakeNewsCount++;
+if (vals.some(v => v.includes('hate'))) hateCount++;
+});
+if (fakeNewsCount) insights.push(`${Math.round((fakeNewsCount / sampleSize) * 100)}% berichten von Fake-News/Desinformation als negativer Erfahrung.`);
+if (hateCount) insights.push(`${Math.round((hateCount / sampleSize) * 100)}% nennen Hate als negative Erfahrung.`);
+}
+
+const feelCol = getCol('gefuehl');
+if (feelCol) {
+let depressed = 0;
+let motivated = 0;
+parsedData.forEach(row => {
+const vals = splitMultiValue(row[feelCol] || '').map(v => v.toLowerCase());
+if (vals.some(v => v.includes('deprim'))) depressed++;
+if (vals.some(v => v.includes('motiv'))) motivated++;
+});
+if (depressed || motivated) {
+insights.push(`Nach dem Scrollen nennen ${Math.round((depressed / sampleSize) * 100)}% „deprimiert“, aber auch ${Math.round((motivated / sampleSize) * 100)}% „motiviert“ – ein ambivalenter Effekt.`);
+}
+}
+
+const mediaVals = getValues('medien', true);
+if (mediaVals.length) {
+const top = sortedCounts(mediaVals, 1);
+if (top.labels.length) insights.push(`Häufigstes genutztes Medium: ${top.labels[0]} (${top.counts[0]} Nennungen).`);
+}
+
+if (!insights.length) {
+box.innerHTML = '<h3>Top-Relationen (automatisch)</h3><p>Für automatische Insights fehlen aktuell passende Spaltenzuordnungen.</p>';
+return;
+}
+
+box.innerHTML = `<h3>Top-Relationen (automatisch)</h3><ul>${insights.map(i => `<li>${i}</li>`).join('')}</ul>`;
 }
 
 function renderRelationAverage(groupKey, valueKey, canvas, tableEl, hintEl) {
