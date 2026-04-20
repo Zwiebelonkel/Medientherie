@@ -509,6 +509,31 @@ header h1 {
 }
 .relation-wrap { min-height: 330px; }
 .relation-table-wrap { margin-top: 16px; }
+.insight-box {
+  margin-top: 16px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface2);
+  padding: 14px 16px;
+}
+.insight-box h3 {
+  font-size: 12px;
+  font-family: var(--mono);
+  letter-spacing: 1px;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.insight-box ul {
+  padding-left: 18px;
+  display: grid;
+  gap: 8px;
+}
+.insight-box li {
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.45;
+}
 
 @media (max-width: 980px) {
   .relation-controls { grid-template-columns: 1fr 1fr; }
