@@ -14,6 +14,12 @@ Chart.defaults.plugins.legend.display = false;
 
 const PALETTE = ['#c8ff00','#ff5f5f','#5f9fff','#ffac5f','#b05fff','#5fffd4','#ffda5f','#ff5fd4','#5fffa0','#ff9a5f'];
 
+/* ─── Cursor glow for background grid ───────────────── */
+window.addEventListener('pointermove', function (e) {
+  document.documentElement.style.setProperty('--cursor-x', `${e.clientX}px`);
+  document.documentElement.style.setProperty('--cursor-y', `${e.clientY}px`);
+});
+
 /* ─── Field definitions ──────────────────────────────── */
 const FIELDS = [
 { key:'alter',                label:'🎂 Alter',                        hints:['alter','age','jahrgang','wie alt'] },
