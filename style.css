@@ -45,6 +45,21 @@ button, input, select, textarea {
     linear-gradient(90deg, rgba(200,255,0,.025) 1px, transparent 1px);
   background-size: 48px 48px;
 }
+
+.bg-grid::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(72, 255, 120, .85) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(72, 255, 120, .85) 1px, transparent 1px);
+  background-size: 48px 48px;
+  opacity: .8;
+  filter: drop-shadow(0 0 6px rgba(72, 255, 120, .55));
+  mask-image: radial-gradient(circle 120px at var(--cursor-x, 50%) var(--cursor-y, 50%), #000 0%, transparent 70%);
+  -webkit-mask-image: radial-gradient(circle 120px at var(--cursor-x, 50%) var(--cursor-y, 50%), #000 0%, transparent 70%);
+}
 .bg-glow {
   position: fixed; inset: 0; z-index: 0; pointer-events: none;
   background: radial-gradient(ellipse 60% 40% at 80% 10%, rgba(200,255,0,.04) 0%, transparent 60%),
