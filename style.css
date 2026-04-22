@@ -41,9 +41,11 @@ button, input, select, textarea {
 .bg-grid {
   position: fixed; inset: 0; z-index: 0; pointer-events: none;
   background-image:
+    radial-gradient(circle 150px at var(--cursor-x, 50%) var(--cursor-y, 50%), rgba(72, 255, 120, .26) 0%, rgba(72, 255, 120, .12) 28%, rgba(72, 255, 120, 0) 72%),
     linear-gradient(rgba(200,255,0,.025) 1px, transparent 1px),
     linear-gradient(90deg, rgba(200,255,0,.025) 1px, transparent 1px);
-  background-size: 48px 48px;
+  background-size: auto, 48px 48px, 48px 48px;
+  transition: background-image .18s ease-out;
 }
 .bg-glow {
   position: fixed; inset: 0; z-index: 0; pointer-events: none;
