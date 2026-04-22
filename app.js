@@ -3,6 +3,7 @@ let parsedData = [];
 let columns    = [];
 let colMap     = {};
 const chartInstances = {};
+let renderBtnBound = false;
 
 /* ─── Chart.js defaults ──────────────────────────────── */
 Chart.defaults.color        = '#5a5a78';
@@ -57,7 +58,7 @@ const FIELDS = [
 - still inside the very first record (header area), merge it with the
 - previous line.
   */
-  function fixBrokenHeader(text) {
+function fixBrokenHeader(text) {
   const lines = text.split('\n');
   const out   = [];
 
@@ -65,7 +66,6 @@ for (let i = 0; i < lines.length; i++) {
 const line    = lines[i];
 const trimmed = line.trim();
 
-```
 // A data row always starts with a quoted year like "2026/...
 const isDataRow = /^"20\d\d\//.test(trimmed) || /^\d{4}\//.test(trimmed);
 
@@ -79,22 +79,52 @@ if (!headerDone && out.length > 0 && !isDataRow && trimmed.length > 0) {
 } else {
   out.push(line);
 }
-```
 
 }
 
 return out.join('\n');
 }
 
+function setImportProgress(percent, label = '') {
+const progress = document.getElementById('import-progress');
+const fill = document.getElementById('import-progress-fill');
+const labelEl = document.getElementById('import-progress-label');
+if (!progress || !fill || !labelEl) return;
+progress.classList.remove('hidden');
+fill.style.width = `${Math.max(0, Math.min(100, percent))}%`;
+if (label) labelEl.textContent = label;
+}
+
+function hideImportProgress() {
+const progress = document.getElementById('import-progress');
+if (!progress) return;
+setTimeout(() => progress.classList.add('hidden'), 450);
+}
+
 /* ─── Parse helper shared by upload + drop ──────────── */
 function parseCSVFile(file) {
 const reader = new FileReader();
+setImportProgress(5, 'Datei wird gelesen …');
+reader.onprogress = function (evt) {
+if (!evt.lengthComputable) return;
+const readRatio = evt.loaded / evt.total;
+setImportProgress(5 + (readRatio * 70), `Datei wird gelesen … ${Math.round(readRatio * 100)}%`);
+};
 reader.onload = function (evt) {
 const fixed  = fixBrokenHeader(evt.target.result);
+setImportProgress(82, 'CSV wird verarbeitet …');
 const result = Papa.parse(fixed, { header: true, skipEmptyLines: true });
+if (result.errors?.length) {
+console.warn('CSV parse warnings:', result.errors);
+}
 parsedData   = result.data;
-columns      = result.meta.fields;
+columns      = result.meta.fields || [];
+setImportProgress(100, `Import abgeschlossen (${parsedData.length} Zeilen)`);
+hideImportProgress();
 buildMapper();
+};
+reader.onerror = function () {
+setImportProgress(100, 'Import fehlgeschlagen. Bitte Datei prüfen.');
 };
 reader.readAsText(file);
 }
@@ -203,7 +233,10 @@ grid.appendChild(row);
 document.getElementById('stat-total').textContent = parsedData.length;
 document.getElementById('stat-cols').textContent  = columns.length;
 
-document.getElementById('render-btn').addEventListener('click', renderDashboard);
+	if (!renderBtnBound) {
+	document.getElementById('render-btn').addEventListener('click', renderDashboard);
+	renderBtnBound = true;
+	}
 }
 
 /* ─── Helpers ────────────────────────────────────────── */
@@ -429,7 +462,6 @@ if (!alterCol) return false;
 const rawVals = parsedData.map(r => (r[alterCol] || '').trim()).filter(Boolean);
 if (!rawVals.length) return false;
 
-```
 // Try numeric first, fall back to text buckets (e.g. "18 - 24")
 const numericAges = rawVals.map(v => parseFloat(v)).filter(v => !isNaN(v));
 if (numericAges.length > rawVals.length * 0.5) {
@@ -454,7 +486,6 @@ if (numericAges.length > rawVals.length * 0.5) {
     .sort((a, b) => a.n - b.n);
   return canvas => chartBar(canvas, sorted.map(e => e.l), sorted.map(e => e.c));
 }
-```
 
 });
 
