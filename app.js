@@ -3,7 +3,6 @@ let parsedData = [];
 let columns    = [];
 let colMap     = {};
 const chartInstances = {};
-let renderBtnBound = false;
 
 /* ─── Chart.js defaults ──────────────────────────────── */
 Chart.defaults.color        = '#5a5a78';
@@ -28,6 +27,7 @@ const FIELDS = [
 { key:'beschaeftigung',       label:'🏢 Beschäftigungsstatus',          hints:['beschäftigungsstatus','beschaeftigungsstatus','employment','wie ist dein beschäftigungsstatus','wie ist dein beschaeftigungsstatus'] },
 { key:'nebenjob',             label:'💶 Nebenjob / Nebenverdienst',      hints:['nebenjob','nebenverdienst','zusatzjob','hast du aktuell einen nebenjob'] },
 { key:'medien',               label:'📱 Genutzte Medien',               hints:['welche medien nutzt du regelmäßig','medien nutzt du regelmäßig','welche medien nutzt du','medium','plattform','platform'] },
+{ key:'plattformen',          label:'🌐 Meistgenutzte Plattformen',     hints:['welche plattformen nutzt du am häufigsten','plattformen nutzt du am häufigsten','plattformen','platforms'] },
 { key:'stunden',              label:'⏱ Stunden täglich',               hints:['wie viel zeit verbringst du täglich','täglich mit den von dir','stunden','stunde','hours','h_tag'] },
 { key:'stunden_woche',        label:'🗓 Stunden wöchentlich',           hints:['wie viel zeit verbringst du wöchentlich','wöchentlich mit den von dir','woechentlich','woche'] },
 { key:'tageszeit',            label:'🕐 Wann genutzt',                  hints:['wann nutzt du','tageszeit','uhrzeit','wann','when'] },
@@ -50,6 +50,29 @@ const FIELDS = [
 { key:'vertrauen',            label:'✅ Medienvertrauen',               hints:['welchen medien vertraust','vertrauen'] },
 { key:'reduziert',            label:'📉 Versucht zu reduzieren',        hints:['versucht zu reduzieren','reduziert','reduz','weniger','cut'] },
 ];
+
+const FIXED_QUESTION_HEADERS = {
+  geschlecht: ['Welchem Geschlecht fühlst Du dich zugehörig?'],
+  alter: ['Wie alt bist Du?'],
+  familienstand: ['Wie ist dein Familienstand?'],
+  beschaeftigung: ['Wie ist dein Beschäftigungsstatus?'],
+  nebenjob: ['Hast du aktuell einen Nebenjob/ Nebenverdienst?'],
+  stunden: ['Wie viel Zeit verbringst Du täglich mit den von dir genutzten Medien?'],
+  stunden_woche: ['Wie viel Zeit verbringst Du wöchentlich mit den von dir genutzten Medien?'],
+  tageszeit: ['Wann nutzt Du die jeweiligen Medien bevorzugt?'],
+  medien: ['Welche Medien nutzt Du regelmäßig?'],
+  plattformen: ['Welche Plattformen nutzt Du am häufigsten? (falls vorhanden – war ggf. abgeschnitten)'],
+  hobby: ['Beinflusst dein Hobby deinen Medienkonsum?'],
+  beruflich: ['Nutzt du Medien beruflich?'],
+  kommunikation_leidet: ['Würdest du sagen, dass deine direkte Kommunikation unter deiner Mediennutzung leidet?'],
+  interessen: ['Welche Interessen/Hobbys hast du?'],
+  inhalte: ['Welche Inhalte konsumierst du überwiegend?'],
+  negativ: ['Hast du schon negative Erfahrungen mit Medien gemacht?'],
+  ueberschritt: ['Um wie viel überschreitest Du deine gewünschte Medienzeit?'],
+  gefuehl: ['Wie fühlst du dich nach dem Scrollen?'],
+  bezahlt: ['Bezahlst Du, um Medien nutzen zu können?'],
+  vertrauen: ['Welchen Medien vertraust Du am meisten?'],
+};
 
 /* ─── CSV broken-header fix ─────────────────────────── */
 function fixBrokenHeader(text) {
@@ -109,7 +132,7 @@ function parseCSVFile(file) {
     columns      = result.meta.fields || [];
     setImportProgress(100, `Import abgeschlossen (${parsedData.length} Zeilen)`);
     hideImportProgress();
-    buildMapper();
+    applyFixedQuestionsAndRender();
   };
   reader.onerror = function () {
     setImportProgress(100, 'Import fehlgeschlagen. Bitte Datei prüfen.');
@@ -164,7 +187,7 @@ function loadSampleData() {
     return obj;
   });
   columns = headers;
-  buildMapper();
+  applyFixedQuestionsAndRender();
 }
 
 /* ─── CSV upload ─────────────────────────────────────── */
@@ -192,42 +215,33 @@ uploadZone.addEventListener('drop', e => {
 });
 
 /* ─── Build mapper UI ────────────────────────────────── */
-function buildMapper() {
+function normalizeHeader(header) {
+  return (header || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
+}
+
+function findExactQuestionColumn(questionHeaders = []) {
+  const normalizedCols = columns.map(c => ({ original: c, norm: normalizeHeader(c) }));
+  const normalizedTargets = questionHeaders.map(q => normalizeHeader(q));
+  const match = normalizedCols.find(c => normalizedTargets.includes(c.norm));
+  return match ? match.original : '';
+}
+
+function applyFixedQuestionsAndRender() {
   colMap = {};
-  document.getElementById('upload-section').classList.add('hidden');
-  document.getElementById('mapper-section').classList.remove('hidden');
-
-  const grid = document.getElementById('mapper-grid');
-  grid.innerHTML = '';
-
   FIELDS.forEach(f => {
-    const match = columns.find(c => autoMap(c) === f.key) || '';
-    colMap[f.key] = match;
-  });
-
-  FIELDS.forEach(f => {
-    const auto = colMap[f.key];
-    const row  = document.createElement('div');
-    row.className = 'mapper-row';
-    row.innerHTML = `<label>${f.label}</label>
-      <select data-field="${f.key}">
-        <option value="">— nicht zugeordnet —</option>
-        ${columns.map(c => `<option value="${c}"${c === auto ? ' selected' : ''}>${c}</option>`).join('')}
-      </select>
-      ${auto ? `<span class="auto-tag">✓ Auto-erkannt</span>` : ''}`;
-    row.querySelector('select').addEventListener('change', function () {
-      colMap[this.dataset.field] = this.value;
-    });
-    grid.appendChild(row);
+    const exact = findExactQuestionColumn(FIXED_QUESTION_HEADERS[f.key] || []);
+    colMap[f.key] = exact || columns.find(c => autoMap(c) === f.key) || '';
   });
 
   document.getElementById('stat-total').textContent = parsedData.length;
   document.getElementById('stat-cols').textContent  = columns.length;
-
-  if (!renderBtnBound) {
-    document.getElementById('render-btn').addEventListener('click', renderDashboard);
-    renderBtnBound = true;
-  }
+  document.getElementById('upload-section').classList.add('hidden');
+  renderDashboard();
 }
 
 /* ─── Helpers ────────────────────────────────────────── */
